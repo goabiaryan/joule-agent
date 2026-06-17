@@ -1,0 +1,41 @@
+services:
+  vllm:
+    image: vllm/vllm-openai:latest
+    command: >
+      --model meta-llama/Meta-Llama-3-8B-Instruct
+      --host 0.0.0.0
+      --port 8000
+    ports:
+      - "8000:8000"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    environment:
+      - JOULE_ENDPOINT=${JOULE_ENDPOINT}
+      - JOULE_API_KEY=${JOULE_API_KEY}
+      - JOULE_CLUSTER_ID=${JOULE_CLUSTER_ID:-demo-cluster}
+      - JOULE_TENANT_ID=${JOULE_TENANT_ID:-demo-tenant}
+
+  joule-sampler:
+    build:
+      context: ../..
+      dockerfile: examples/vllm_sidecar/Dockerfile.sampler
+    environment:
+      - JOULE_ENDPOINT=${JOULE_ENDPOINT}
+      - JOULE_API_KEY=${JOULE_API_KEY}
+      - JOULE_CLUSTER_ID=${JOULE_CLUSTER_ID:-demo-cluster}
+      - JOULE_TENANT_ID=${JOULE_TENANT_ID:-demo-tenant}
+      - JOULE_SAMPLER_INTERVAL=2
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    depends_on:
+      - vllm

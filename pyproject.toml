@@ -1,0 +1,50 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "joule-agent"
+version = "0.1.0"
+description = "Open-source telemetry agent for GPU inference fleets"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+authors = [{ name = "Joule" }]
+keywords = ["gpu", "inference", "telemetry", "nvml", "vllm", "power"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: System :: Monitoring",
+]
+dependencies = [
+  "httpx>=0.27.0",
+  "pydantic>=2.7.0",
+]
+
+[project.optional-dependencies]
+gpu = ["nvidia-ml-py>=12.535.0"]
+dev = ["pytest>=8.0.0", "pytest-asyncio>=0.23.0", "ruff>=0.4.0"]
+
+[project.urls]
+Homepage = "https://github.com/goabiaryan/joule-agent"
+Repository = "https://github.com/goabiaryan/joule-agent"
+Documentation = "https://github.com/goabiaryan/joule-agent#readme"
+
+[project.scripts]
+joule-sampler = "joule_agent.sampler:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["joule_agent"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
